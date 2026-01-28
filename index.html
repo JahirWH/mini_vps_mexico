@@ -1,0 +1,1115 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mini VPS México - Servidores VPS y VPN</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", "Segoe UI", sans-serif;
+        background: #0a0a0a;
+        color: #e5e5e5;
+        line-height: 1.6;
+      }
+
+      /* Navigation */
+      .nav {
+        background: linear-gradient(135deg, #111111 0%, #1a1a1a 100%);
+        padding: 1rem 0;
+        border-bottom: 1px solid #252525;
+      }
+
+      .nav-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .nav-brand {
+        color: #ffffff;
+        text-decoration: none;
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+      }
+
+      .nav-links a {
+        color: #a1a1a1;
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+
+      .nav-links a:hover {
+        color: #ffffff;
+      }
+      /* Header */
+      .header {
+        background: linear-gradient(135deg, #111111 0%, #1a1a1a 100%);
+        padding: 80px 20px 120px;
+        text-align: center;
+        border-bottom: 1px solid #252525;
+      }
+
+      .header h1 {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 1rem;
+        letter-spacing: -0.02em;
+      }
+
+      .header-subtitle {
+        font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+        color: #a1a1a1;
+        max-width: 600px;
+        margin: 0 auto 2rem;
+        font-weight: 400;
+      }
+
+      .header-description {
+        font-size: 1rem;
+        color: #737373;
+        max-width: 500px;
+        margin: 0 auto;
+      }
+
+      /* Main Container */
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Plans Section */
+      .plans-section {
+        padding: 80px 20px;
+        background: #0a0a0a;
+      }
+
+      .section-title {
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: #ffffff;
+        text-align: center;
+        margin-bottom: 3rem;
+        letter-spacing: -0.01em;
+      }
+
+      .plans-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2rem;
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      .plan-card {
+        background: linear-gradient(145deg, #161616 0%, #1f1f1f 100%);
+        border: 1px solid #2a2a2a;
+        border-radius: 12px;
+        padding: 2.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .plan-card:hover {
+        transform: translateY(-5px);
+        border-color: #404040;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      .plan-card.featured {
+        border-color: #404040;
+        background: linear-gradient(145deg, #1a1a1a 0%, #242424 100%);
+      }
+
+      .plan-card.featured::before {
+        content: "POPULAR";
+        position: absolute;
+        top: -1px;
+        right: 20px;
+        background: #ffffff;
+        color: #000000;
+        padding: 0.4rem 1rem;
+        border-radius: 0 0 8px 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      .plan-name {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+      }
+
+      .plan-price {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+      }
+
+      .plan-price .currency {
+        font-size: 1rem;
+        color: #a1a1a1;
+        font-weight: 400;
+      }
+
+      .plan-period {
+        color: #737373;
+        margin-bottom: 2rem;
+        font-size: 0.95rem;
+      }
+
+      .plan-billing {
+        border-radius: 6px;
+        opacity: 0.7;
+        margin-bottom: 2rem;
+      }
+
+      .plan-billing-text {
+        color: #d4d4d4;
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+
+      .plan-billing-highlight {
+        color: #ffffff;
+        font-weight: 600;
+      }
+
+      .plan-features {
+        list-style: none;
+        margin-bottom: 2.5rem;
+      }
+
+      .plan-features li {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+        color: #d4d4d4;
+        font-size: 0.95rem;
+      }
+
+      .check-icon {
+        width: 16px;
+        height: 16px;
+        background: #404040;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 0.7rem;
+        color: #ffffff;
+      }
+
+      .plan-button {
+        width: 100%;
+        background: #ffffff;
+        color: #000000;
+        padding: 1rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+      }
+
+      .plan-button:hover {
+        background: #e5e5e5;
+        transform: translateY(-2px);
+      }
+
+      .plan-card.featured .plan-button {
+        background: #262626;
+        color: #ffffff;
+        border: 1px solid #404040;
+      }
+
+      .plan-card.featured .plan-button:hover {
+        background: #333333;
+        border-color: #525252;
+      }
+
+      /* Contact Section */
+      .contact-section {
+        padding: 80px 20px;
+        background: linear-gradient(180deg, #0a0a0a 0%, #111111 100%);
+        border-top: 1px solid #252525;
+      }
+
+      .contact-content {
+        text-align: center;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .contact-title {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 1rem;
+      }
+
+      .contact-description {
+        color: #a1a1a1;
+        margin-bottom: 2.5rem;
+        font-size: 1.05rem;
+      }
+
+      .contact-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .contact-btn {
+        background: linear-gradient(145deg, #1a1a1a 0%, #262626 100%);
+        color: #ffffff;
+        padding: 1rem 2rem;
+        border: 1px solid #404040;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .contact-btn:hover {
+        background: linear-gradient(145deg, #262626 0%, #333333 100%);
+        border-color: #525252;
+        transform: translateY(-2px);
+      }
+
+      .contact-btn.primary {
+        background: #ffffff;
+        color: #000000;
+        border-color: #ffffff;
+      }
+
+      .contact-btn.primary:hover {
+        background: #e5e5e5;
+        border-color: #e5e5e5;
+      }
+
+      /* Footer */
+      .footer {
+        background: #111111;
+        padding: 40px 20px;
+        text-align: center;
+        border-top: 1px solid #252525;
+      }
+
+      .footer-text {
+        color: #737373;
+        font-size: 0.9rem;
+      }
+
+      /* Login Modal Styles */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .modal {
+        background: linear-gradient(145deg, #161616 0%, #1f1f1f 100%);
+        border: 1px solid #2a2a2a;
+        border-radius: 12px;
+        padding: 2rem;
+        max-width: 400px;
+        width: 90%;
+        position: relative;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .modal-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #ffffff;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        color: #737373;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      .form-label {
+        display: block;
+        color: #d4d4d4;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+      }
+
+      .form-input {
+        width: 100%;
+        background: #262626;
+        border: 1px solid #404040;
+        border-radius: 8px;
+        padding: 0.75rem;
+        color: #ffffff;
+        font-size: 1rem;
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: #525252;
+      }
+
+      .modal-btn {
+        width: 100%;
+        background: #ffffff;
+        color: #000000;
+        padding: 0.75rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 1rem;
+      }
+
+      .modal-btn:hover {
+        background: #e5e5e5;
+      }
+
+      .modal-switch {
+        text-align: center;
+        margin-top: 1rem;
+      }
+
+      .modal-switch a {
+        color: #ffffff;
+        text-decoration: none;
+        font-size: 0.9rem;
+      }
+
+      .modal-switch a:hover {
+        color: #a1a1a1;
+      }
+
+      /* Alert Styles */
+      .alert {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        color: #ffffff;
+        font-weight: 500;
+        z-index: 1001;
+        max-width: 300px;
+        display: none;
+      }
+
+      .alert.success {
+        background: #10b981;
+      }
+
+      .alert.error {
+        background: #ef4444;
+      }
+
+      .alert.warning {
+        background: #bbbab8;
+      }
+
+      /* Demo Banner */
+      .demo-banner {
+        background: linear-gradient(90deg, #9e9e9e 0%, #f0eeed 100%);
+        color: #000000;
+        text-align: center;
+        padding: 0.75rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .header {
+          padding: 60px 20px 80px;
+        }
+
+        .plans-section {
+          padding: 60px 20px;
+        }
+
+        .contact-section {
+          padding: 60px 20px;
+        }
+
+        .plans-grid {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+
+        .plan-card {
+          padding: 2rem;
+        }
+
+        .contact-buttons {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .contact-btn {
+          width: 100%;
+          max-width: 300px;
+          justify-content: center;
+        }
+
+        .nav-links {
+          gap: 1rem;
+          font-size: 0.9rem;
+        }
+      }
+
+      /* Subtle animations */
+      .plan-card {
+        animation: fadeIn 0.6s ease-out;
+      }
+
+      .plan-card:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+      .plan-card:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .plan-card:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Demo Banner -->
+    <div class="demo-banner">
+       MODO DEMOSTRACIÓN - Esta es una versión estática de prueba
+    </div>
+
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="#" class="nav-brand">Mini VPS México</a>
+        <ul class="nav-links">
+          <li><a href="#features">Servicios</a></li>
+          <li><a href="#pricing">Precios</a></li>
+          <li><a href="#contact">Contacto</a></li>
+          <li><a href="#help">Ayuda</a></li>
+          <li>
+            <a href="#" onclick="showModal('loginModal')">Iniciar Sesión</a>
+          </li>
+          <li>
+            <a href="#" onclick="showModal('registerModal')">Registrarse</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="header">
+      <h1>Mini VPS México</h1>
+      <p class="header-subtitle">
+        Servidores VPS y VPN confiables desde México
+      </p>
+      <p class="header-description">
+        Servidores VPS de alto rendimiento con tecnología SSD, conexiones de
+        segura y soporte técnico 24/7 desde México
+      </p>
+    </header>
+
+    <!-- Diferenciadores Section -->
+    <section class="diferenciadores-section" id="features">
+      <div class="container" style="padding: 40px 0; text-align: center">
+        <h2
+          style="
+            font-size: 2rem;
+            color: #fff;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+          "
+        >
+          ¿Por qué elegir Mini VPS México?
+        </h2>
+        <div
+          style="
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 32px;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px 0;
+          "
+        >
+          <!-- Mini resumen -->
+          <div
+            style="
+              flex: 1 1 260px;
+              min-width: 220px;
+              max-width: 340px;
+              text-align: left;
+            "
+          >
+            <p
+              style="font-size: 1.12rem; color: #e5e5e5; margin-bottom: 1.2rem"
+            >
+              VPS económicos y confiables, ideales para desarrolladores,
+              estudiantes y emprendedores que buscan un entorno Linux para
+              pruebas, apps, bots, servicios web o hosting simple. Soporte local
+              y precios justos.
+            </p>
+          </div>
+          <!-- Lista diferenciadores -->
+          <div style="flex: 1 1 260px; min-width: 220px; max-width: 340px">
+            <h4
+              style="
+                color: #fff;
+                font-weight: 600;
+                margin-bottom: 0.7rem;
+                text-align: left;
+              "
+            >
+              ¿En qué nos diferenciamos?
+            </h4>
+            <ul
+              style="
+                list-style: none;
+                padding: 0;
+                color: #b5b5b5;
+                font-size: 1.05rem;
+                text-align: left;
+              "
+            >
+              <li style="margin-bottom: 0.5em">
+                🇲🇽 Precios en pesos mexicanos
+              </li>
+              <li style="margin-bottom: 0.5em">
+                Panel simple o acceso SSH inmediato
+              </li>
+              <li style="margin-bottom: 0.5em">
+                Uso flexible: bots, pruebas, APIs, scripts, juegos o paneles web
+              </li>
+              <li style="margin-bottom: 0.5em">
+                VPS optimizados para Node.js, Python, Docker o WordPress
+              </li>
+              <li style="margin-bottom: 0.5em">
+                Ideal para testeo de código, hosting básico o aprendizaje de
+                Linux
+              </li>
+              <li style="margin-bottom: 0.5em">Sin costos ocultos</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Plans Section -->
+    <section class="plans-section" id="pricing">
+      <div class="container">
+        <h2 class="section-title">Nuestros Servicios</h2>
+
+        <div class="plans-grid">
+          <!-- Plan Básico -->
+          <div class="plan-card">
+            <h3 class="plan-name">Plan Básico</h3>
+            <div class="plan-price">$25 <span class="currency">MXN</span></div>
+            <p class="plan-period">por mes</p>
+            <div class="plan-billing">
+              <p class="plan-billing-text">
+                <span class="plan-billing-highlight">Facturación mensual</span
+                ><br />
+                Renovación automática
+              </p>
+            </div>
+            <ul class="plan-features">
+              <li>
+                <div class="check-icon">✓</div>
+                1 vCPU
+              </li>
+              <li>
+                <div class="check-icon">✓</div>
+                256 MB RAM
+              </li>
+              <li>
+                <div class="check-icon">✓</div>
+                5 GB SSD
+              </li>
+              <li>
+                <div class="check-icon">✓</div>
+                1 IPv4 dedicada
+              </li>
+              <li>
+                <div class="check-icon">✓</div>
+                Acceso SSH sin root
+              </li>
+              <li>
+                <div class="check-icon">✓</div>
+                Panel HestiaCP
+              </li>
+              <li>
+                <div class="check-icon">✓</div>
+                Soporte técnico
+              </li>
+            </ul>
+            <button class="plan-button" onclick="selectPlan('Plan Básico', 25)">
+              Comprar
+            </button>
+          </div>
+
+          <!-- Plan Pro -->
+          <div class="plan-card featured">
+            <h3 class="plan-name">Plan Pro</h3>
+            <div class="plan-price">$70 <span class="currency">MXN</span></div>
+            <p class="plan-period">por mes</p>
+            <div class="plan-billing">
+              <p class="plan-billing-text">
+                <span class="plan-billing-highlight">Facturación mensual</span
+                ><br />
+                Renovación automática
+              </p>
+            </div>
+            <ul class="plan-features">
+              <li>
+                <div class="check-icon">✓</div>
+                2 vCPU
+              </li>
+              <li>
+                <div class="check-icon">✓</div>
+                1 GB RAM
+              </li>
+              <li>
+                <div class="check-icon">✓</div>
+                10 GB SSD
+              </li>
+              <li>
+                <div class="check-icon">✓</div>
+                1 IPv4 dedicada
+              </li>
+              <li>
+                <div class="check-icon">✓</div>
+                SSH con acceso root
+              </li>
+              <li>
+                <div class="check-icon">✓</div>
+                Panel HestiaCP
+              </li>
+              <li>
+                <div class="check-icon">✓</div>
+                Soporte prioritario
+              </li>
+            </ul>
+            <button class="plan-button" onclick="selectPlan('Plan Pro', 70)">
+              Comprar
+            </button>
+          </div>
+
+          <!-- Plan VPN -->
+          <div class="plan-card">
+            <h3 class="plan-name">VPN Segura</h3>
+            <div class="plan-price">$20 <span class="currency">MXN</span></div>
+            <p class="plan-period">por mes</p>
+            <div class="plan-billing">
+              <p class="plan-billing-text">
+                <span class="plan-billing-highlight">Facturación mensual</span
+                ><br />
+                Renovación automática
+              </p>
+            </div>
+            <ul class="plan-features">
+              <li>
+                <div class="check-icon">✓</div>
+                Túnel WireGuard
+              </li>
+              <li>
+                <div class="check-icon">✓</div>
+                Sin registro de logs
+              </li>
+              <li>
+                <div class="check-icon">✓</div>
+                Velocidad 1 Mbps
+              </li>
+              <li>
+                <div class="check-icon">✓</div>
+                1 dispositivo
+              </li>
+              <li>
+                <div class="check-icon">✓</div>
+                IP mexicana
+              </li>
+              <li>
+                <div class="check-icon">✓</div>
+                Configuración automática
+              </li>
+              <li>
+                <div class="check-icon">✓</div>
+                Panel HestiaCP
+              </li>
+              <li>
+                <div class="check-icon">✓</div>
+                Soporte 24/7
+              </li>
+            </ul>
+            <button class="plan-button" onclick="selectPlan('VPN Segura', 20)">
+              Comprar
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+      <div class="container">
+        <div class="contact-content">
+          <h2 class="contact-title">Contacto y Soporte</h2>
+          <p class="contact-description">
+            ¿Tienes dudas sobre nuestros servicios? Contáctanos por tu medio
+            preferido
+          </p>
+          <div class="contact-buttons">
+            <a
+              href="https://t.me/tuser"
+              class="contact-btn primary"
+              target="_blank"
+            >
+              💬 Telegram
+            </a>
+            <a href="mailto:soporte@tudominio.com" class="contact-btn">
+              📧 Email
+            </a>
+            <a href="#help" class="contact-btn"> ❓ Centro de Ayuda </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <p class="footer-text">
+          &copy; 2026 Mini VPS México. Todos los derechos reservados.
+        </p>
+      </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Iniciar Sesión</h3>
+          <button class="close-btn" onclick="closeModal('loginModal')">
+            &times;
+          </button>
+        </div>
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-input" id="loginEmail" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contraseña</label>
+            <input
+              type="password"
+              class="form-input"
+              id="loginPassword"
+              required
+            />
+          </div>
+          <button type="submit" class="modal-btn">Iniciar Sesión</button>
+        </form>
+        <div class="modal-switch">
+          <a
+            href="#"
+            onclick="
+              showModal('registerModal');
+              closeModal('loginModal');
+            "
+            >¿No tienes cuenta? Regístrate</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal-overlay" id="registerModal">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 class="modal-title">Registrarse</h3>
+          <button class="close-btn" onclick="closeModal('registerModal')">
+            &times;
+          </button>
+        </div>
+        <form id="registerForm" onsubmit="handleRegister(event)">
+          <div class="form-group">
+            <label class="form-label">Nombre</label>
+            <input type="text" class="form-input" id="registerName" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input
+              type="email"
+              class="form-input"
+              id="registerEmail"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contraseña</label>
+            <input
+              type="password"
+              class="form-input"
+              id="registerPassword"
+              required
+            />
+          </div>
+          <button type="submit" class="modal-btn">Registrarse</button>
+        </form>
+        <div class="modal-switch">
+          <a
+            href="#"
+            onclick="
+              showModal('loginModal');
+              closeModal('registerModal');
+            "
+            >¿Ya tienes cuenta? Inicia sesión</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert Container -->
+    <div id="alertContainer"></div>
+
+    <script>
+      // Modal functions
+      function showModal(modalId) {
+        document.getElementById(modalId).style.display = "flex";
+      }
+
+      function closeModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+      }
+
+      // Close modal when clicking outside
+      document.querySelectorAll(".modal-overlay").forEach((overlay) => {
+        overlay.addEventListener("click", function (e) {
+          if (e.target === overlay) {
+            overlay.style.display = "none";
+          }
+        });
+      });
+
+      // Select plan function (DEMO VERSION)
+      function selectPlan(planName, price) {
+        showAlert(
+          `Esta es una DEMO. En producción, podrías comprar el ${planName} por $${price} MXN/mes`,
+          "warning",
+        );
+
+        // Simular que muestra modal de compra
+        setTimeout(() => {
+          if (confirm(`¿Deseas ver el proceso de compra del ${planName}?`)) {
+            showPurchaseDemo(planName, price);
+          }
+        }, 500);
+      }
+
+      // Demo purchase flow
+      function showPurchaseDemo(planName, price) {
+        const modal = document.createElement("div");
+        modal.className = "modal-overlay";
+        modal.id = "purchaseModal";
+        modal.innerHTML = `
+                <div class="modal" style="max-width: 600px;">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Vista Previa de Compra (DEMO)</h3>
+                        <button class="close-btn" onclick="closeModal('purchaseModal')">&times;</button>
+                    </div>
+                    <div style="padding: 1rem;">
+                        <div style="background: #262626; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                            <h4 style="color: #ffffff; margin-bottom: 1rem;">Resumen de Compra</h4>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span style="color: #d4d4d4;">Plan seleccionado:</span>
+                                <strong style="color: #ffffff;">${planName}</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span style="color: #d4d4d4;">Precio:</span>
+                                <span style="color: #ffffff;">$${price} MXN</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span style="color: #d4d4d4;">IVA (16%):</span>
+                                <span style="color: #ffffff;">$${(price * 0.16).toFixed(2)} MXN</span>
+                            </div>
+                            <hr style="border: none; border-top: 1px solid #404040; margin: 1rem 0;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <strong style="color: #ffffff;">Total:</strong>
+                                <strong style="color: #ffffff; font-size: 1.3rem;">$${(price * 1.16).toFixed(2)} MXN</strong>
+                            </div>
+                        </div>
+                        
+                        <div style="background: #1a1a1a; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #f59e0b;">
+                            <p style="color: #f59e0b; text-align: center; margin: 0;">
+                                ⚠️ Esta es una DEMO. En producción aquí se procesaría el pago real.
+                            </p>
+                        </div>
+                        
+                        <button class="modal-btn" onclick="simulatePurchase()">
+                            Simular Compra
+                        </button>
+                    </div>
+                </div>
+            `;
+
+        document.body.appendChild(modal);
+        modal.style.display = "flex";
+
+        // Close modal when clicking outside
+        modal.addEventListener("click", function (e) {
+          if (e.target === modal) {
+            closeModal("purchaseModal");
+            modal.remove();
+          }
+        });
+      }
+
+      // Simulate purchase process
+      function simulatePurchase() {
+        showAlert("Procesando compra simulada...", "warning");
+
+        setTimeout(() => {
+          showAlert(
+            "¡Compra simulada exitosa! En producción, tu VPS se activaría ahora.",
+            "success",
+          );
+          closeModal("purchaseModal");
+          const modal = document.getElementById("purchaseModal");
+          if (modal) modal.remove();
+        }, 2000);
+      }
+
+      // Handle login form submission (DEMO)
+      function handleLogin(event) {
+        event.preventDefault();
+
+        const email = document.getElementById("loginEmail").value;
+        showAlert(
+          `DEMO: Login simulado para ${email}. En producción esto autenticaría al usuario.`,
+          "success",
+        );
+
+        setTimeout(() => {
+          closeModal("loginModal");
+        }, 1500);
+      }
+
+      // Handle register form submission (DEMO)
+      function handleRegister(event) {
+        event.preventDefault();
+
+        const name = document.getElementById("registerName").value;
+        const email = document.getElementById("registerEmail").value;
+
+        showAlert(
+          `DEMO: Registro simulado para ${name} (${email}). En producción esto crearía la cuenta.`,
+          "success",
+        );
+
+        setTimeout(() => {
+          closeModal("registerModal");
+        }, 1500);
+      }
+
+      // Show alert message
+      function showAlert(message, type = "success") {
+        const alertContainer = document.getElementById("alertContainer");
+        const alert = document.createElement("div");
+        alert.className = `alert ${type}`;
+        alert.textContent = message;
+
+        alertContainer.appendChild(alert);
+        alert.style.display = "block";
+
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+          if (alert.parentNode) {
+            alert.remove();
+          }
+        }, 5000);
+      }
+
+      // Smooth scroll for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          const href = this.getAttribute("href");
+          if (href !== "#" && href !== "#help") {
+            e.preventDefault();
+            const target = document.querySelector(href);
+            if (target) {
+              target.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
