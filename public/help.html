@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soporte — NexCloud MX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #060810;
+            --bg2: #0c0f1a;
+            --surface: #111520;
+            --surface2: #181d2e;
+            --border: rgba(255,255,255,0.07);
+            --border-glow: rgba(99,179,237,0.25);
+            --text: #e8ecf4;
+            --muted: #6b7280;
+            --muted2: #9ca3af;
+            --accent: #63b3ed;
+            --accent2: #a78bfa;
+            --accent3: #34d399;
+            --accent4: #f59e0b;
+            --accent5: #fb7185;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'DM Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        body::after {
+            content:'';
+            position:fixed; inset:0;
+            background-image:
+                linear-gradient(rgba(99,179,237,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99,179,237,0.025) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events:none; z-index:0;
+        }
+
+        nav {
+            position:sticky; top:0; z-index:100;
+            background: rgba(6,8,16,0.92);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 clamp(20px,5vw,80px);
+        }
+        .nav-inner {
+            max-width:1000px; margin:0 auto;
+            display:flex; justify-content:space-between; align-items:center;
+            height: 60px;
+        }
+        .nav-logo {
+            font-family:'Syne',sans-serif;
+            font-size:1.1rem; font-weight:800; color:#fff;
+            text-decoration:none; display:flex; align-items:center; gap:8px;
+        }
+        .logo-dot { width:7px; height:7px; background:var(--accent3); border-radius:50%; animation:blink 2s infinite; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.35} }
+        .nav-links { display:flex; gap:1.5rem; list-style:none; align-items:center; }
+        .nav-links a { color:var(--muted); text-decoration:none; font-size:0.78rem; transition:color 0.2s; }
+        .nav-links a:hover { color:var(--text); }
+        .nav-links a.here { color:var(--accent); }
+
+        .hero {
+            position:relative; z-index:1;
+            text-align:center;
+            padding: clamp(55px,8vw,90px) clamp(20px,5vw,80px) clamp(40px,5vw,60px);
+            overflow:hidden;
+        }
+        .hero::before {
+            content:'';
+            position:absolute; width:600px; height:350px;
+            background:radial-gradient(circle, rgba(99,179,237,0.07), transparent 70%);
+            top:50%; left:50%; transform:translate(-50%,-50%);
+            pointer-events:none;
+        }
+        .hero-tag {
+            display:inline-flex; align-items:center; gap:6px;
+            border:1px solid var(--border-glow);
+            background:rgba(99,179,237,0.06);
+            padding:0.3rem 0.9rem; border-radius:100px;
+            font-size:0.7rem; color:var(--accent); letter-spacing:0.1em;
+            margin-bottom:1.25rem; position:relative; z-index:1;
+        }
+        .hero h1 {
+            font-family:'Syne',sans-serif;
+            font-size:clamp(2rem,4vw,3rem); font-weight:800;
+            color:#fff; letter-spacing:-0.02em; line-height:1.1;
+            margin-bottom:1rem; position:relative; z-index:1;
+        }
+        .hero p { font-size:0.88rem; color:var(--muted); max-width:440px; margin:0 auto; line-height:1.8; position:relative; z-index:1; }
+
+        .main {
+            position:relative; z-index:1;
+            max-width:1000px; margin:0 auto;
+            padding: 0 clamp(20px,5vw,80px) clamp(50px,6vw,80px);
+            display:grid; grid-template-columns: 1fr 340px; gap: 2.5rem; align-items:start;
+        }
+
+        /* STATUS PANEL */
+        .status-panel {
+            background:var(--surface); border:1px solid var(--border);
+            border-radius:16px; overflow:hidden; position:sticky; top:80px;
+        }
+        .panel-head {
+            padding:1.25rem 1.5rem; border-bottom:1px solid var(--border);
+            display:flex; justify-content:space-between; align-items:center;
+        }
+        .panel-head-title { font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:800; color:#fff; }
+        .all-ok {
+            display:flex; align-items:center; gap:6px; font-size:0.7rem; color:var(--accent3);
+            background:rgba(52,211,153,0.08); border:1px solid rgba(52,211,153,0.2);
+            padding:0.25rem 0.7rem; border-radius:100px;
+        }
+        .ok-dot { width:6px; height:6px; border-radius:50%; background:var(--accent3); animation:blink 2s infinite; }
+
+        .status-list { padding:0.25rem 0; }
+        .status-row {
+            display:flex; align-items:center; padding:0.8rem 1.5rem;
+            border-bottom:1px solid var(--border); gap:0.75rem;
+        }
+        .status-row:last-child { border-bottom:none; }
+        .s-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0; }
+        .s-info { flex:1; }
+        .s-name { font-size:0.82rem; color:var(--text); }
+        .s-detail { font-size:0.68rem; color:var(--muted); margin-top:2px; }
+        .s-badge {
+            display:flex; align-items:center; gap:5px; font-size:0.68rem;
+            padding:0.22rem 0.6rem; border-radius:100px; border:1px solid; flex-shrink:0;
+        }
+        .s-badge.up { color:var(--accent3); border-color:rgba(52,211,153,0.3); background:rgba(52,211,153,0.07); }
+        .s-badge.partial { color:var(--accent4); border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.07); }
+        .s-led { width:6px; height:6px; border-radius:50%; background:currentColor; }
+        .s-badge.up .s-led { animation:blink 2s infinite; }
+
+        .uptime-section { padding:1.25rem 1.5rem; border-top:1px solid var(--border); }
+        .uptime-title { font-size:0.68rem; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:1rem; }
+        .uptime-row { margin-bottom:0.85rem; }
+        .uptime-row:last-child { margin-bottom:0; }
+        .uptime-label { display:flex; justify-content:space-between; font-size:0.72rem; margin-bottom:0.3rem; }
+        .uptime-name { color:var(--muted2); }
+        .uptime-pct { color:var(--accent3); font-family:'Syne',sans-serif; font-weight:700; }
+        .uptime-dots { display:flex; gap:2px; }
+        .uptime-dot { flex:1; height:5px; border-radius:2px; background:var(--accent3); opacity:0.7; }
+        .uptime-dot.miss { background:var(--accent5); opacity:0.5; }
+        .uptime-dot.partial { background:var(--accent4); opacity:0.6; }
+
+        .contact-section { padding:1.25rem 1.5rem; border-top:1px solid var(--border); }
+        .contact-title { font-size:0.68rem; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:0.85rem; }
+        .contact-link {
+            display:flex; align-items:center; gap:0.7rem; padding:0.65rem 0.85rem;
+            border:1px solid var(--border); border-radius:8px; margin-bottom:0.5rem;
+            text-decoration:none; color:var(--text); font-size:0.78rem; transition:all 0.2s;
+        }
+        .contact-link:last-child { margin-bottom:0; }
+        .contact-link:hover { border-color:var(--border-glow); color:var(--accent); }
+        .cl-icon { font-size:1rem; }
+        .cl-info { flex:1; }
+        .cl-name { font-size:0.78rem; color:inherit; }
+        .cl-sub { font-size:0.66rem; color:var(--muted); margin-top:1px; }
+        .resp-badge {
+            font-size:0.62rem; padding:0.15rem 0.45rem;
+            background:rgba(52,211,153,0.1); border:1px solid rgba(52,211,153,0.2);
+            color:var(--accent3); border-radius:4px;
+            font-family:'Syne',sans-serif; font-weight:700;
+        }
+
+        /* TICKET FORM */
+        .ticket-heading { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; color:#fff; margin-bottom:0.4rem; }
+        .ticket-sub { font-size:0.82rem; color:var(--muted); line-height:1.7; margin-bottom:2rem; }
+        .ticket-form { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:2rem; }
+
+        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem; }
+        .form-group { margin-bottom:1rem; }
+        .form-label { display:block; font-size:0.68rem; color:var(--muted); letter-spacing:0.07em; text-transform:uppercase; margin-bottom:0.45rem; }
+        .form-input {
+            width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:8px;
+            padding:0.75rem 1rem; color:var(--text); font-family:'DM Mono',monospace;
+            font-size:0.85rem; transition:all 0.25s; -webkit-appearance:none;
+        }
+        .form-input:focus { outline:none; border-color:var(--border-glow); background:var(--surface2); }
+        .form-textarea { resize:vertical; min-height:130px; line-height:1.6; }
+
+        .priority-group { display:flex; gap:0.5rem; margin-bottom:1rem; }
+        .prio-btn {
+            flex:1; padding:0.6rem 0.5rem; background:var(--bg2); border:1px solid var(--border);
+            border-radius:8px; cursor:pointer; font-family:'DM Mono',monospace;
+            font-size:0.75rem; color:var(--muted); transition:all 0.2s; text-align:center;
+        }
+        .prio-btn:hover { border-color:rgba(255,255,255,0.15); color:var(--text); }
+        .prio-btn.sel-low { border-color:rgba(52,211,153,0.4); background:rgba(52,211,153,0.08); color:var(--accent3); }
+        .prio-btn.sel-mid { border-color:rgba(245,158,11,0.4); background:rgba(245,158,11,0.08); color:var(--accent4); }
+        .prio-btn.sel-high { border-color:rgba(251,113,133,0.4); background:rgba(251,113,133,0.08); color:var(--accent5); }
+        .prio-icon { display:block; font-size:1rem; margin-bottom:3px; }
+
+        .divider { height:1px; background:var(--border); margin:1.5rem 0; }
+
+        .submit-btn {
+            width:100%; background:linear-gradient(135deg, var(--accent), var(--accent2));
+            color:#000; border:none; border-radius:10px; padding:0.95rem;
+            font-family:'Syne',sans-serif; font-weight:800; font-size:0.95rem;
+            cursor:pointer; transition:all 0.3s;
+            display:flex; align-items:center; justify-content:center; gap:0.5rem;
+        }
+        .submit-btn:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(99,179,237,0.3); }
+        .submit-hint { text-align:center; font-size:0.72rem; color:var(--muted); margin-top:0.75rem; }
+
+        .success-box { text-align:center; padding:2.5rem 1rem; }
+        .success-icon { font-size:3rem; margin-bottom:1rem; }
+        .success-title { font-family:'Syne',sans-serif; font-size:1.3rem; font-weight:800; color:#fff; margin-bottom:0.5rem; }
+        .success-desc { font-size:0.82rem; color:var(--muted); line-height:1.8; }
+        .ticket-num {
+            display:inline-block; margin-top:1.25rem;
+            background:rgba(99,179,237,0.1); border:1px solid rgba(99,179,237,0.2);
+            padding:0.5rem 1.25rem; border-radius:8px;
+            font-family:'Syne',sans-serif; font-weight:700; color:var(--accent); font-size:0.9rem;
+        }
+        .reset-btn {
+            display:inline-block; margin-top:1rem; background:none;
+            border:1px solid var(--border); color:var(--muted); border-radius:8px;
+            padding:0.5rem 1.25rem; font-family:'DM Mono',monospace;
+            font-size:0.78rem; cursor:pointer; transition:all 0.2s;
+        }
+        .reset-btn:hover { color:var(--text); border-color:rgba(255,255,255,0.15); }
+
+        footer { position:relative; z-index:1; border-top:1px solid var(--border); padding:1.5rem clamp(20px,5vw,80px); background:var(--bg2); }
+        .footer-inner { max-width:1000px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
+        .footer-brand { font-family:'Syne',sans-serif; font-size:1rem; font-weight:800; color:#fff; }
+        .footer-text { font-size:0.75rem; color:var(--muted); }
+
+        .toast-wrap { position:fixed; bottom:1.5rem; right:1.5rem; z-index:200; }
+        .toast { background:var(--surface2); border:1px solid var(--border); border-left:3px solid var(--accent4); padding:0.75rem 1.2rem; border-radius:8px; font-size:0.8rem; color:var(--text); animation:slideUp 0.3s ease; max-width:300px; }
+        @keyframes slideUp { from{transform:translateY(8px);opacity:0} to{transform:translateY(0);opacity:1} }
+
+        @media (max-width:760px) {
+            .main { grid-template-columns:1fr; }
+            .status-panel { position:static; }
+            .form-row { grid-template-columns:1fr; }
+        }
+        @media (max-width:480px) { .nav-links { display:none; } .priority-group { flex-direction:column; } }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-inner">
+        <a href="/" class="nav-logo"><div class="logo-dot"></div> NexCloud MX</a>
+        <ul class="nav-links">
+            <li><a href="/">Inicio</a></li>
+            <li><a href="/#servicios">Servicios</a></li>
+            <li><a href="/dashboard">Dashboard</a></li>
+            <li><a href="/help" class="here">Soporte</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="hero">
+    <div class="hero-tag">🎫 Soporte técnico</div>
+    <h1>¿Necesitas ayuda?<br>Estamos aquí.</h1>
+    <p>Escríbenos con los detalles de tu problema y te respondemos en menos de 2 horas en días hábiles.</p>
+</div>
+
+<div class="main">
+
+    <!-- TICKET FORM (left) -->
+    <div>
+        <div class="ticket-heading">Abrir nuevo ticket</div>
+        <div class="ticket-sub">Incluye todos los detalles posibles — así podemos resolver tu caso más rápido sin ir y venir con preguntas.</div>
+
+        <div class="ticket-form" id="formPanel">
+            <div class="form-row">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label">Nombre completo</label>
+                    <input type="text" class="form-input" id="f-name" placeholder="Juan López">
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label">Email de contacto</label>
+                    <input type="email" class="form-input" id="f-email" placeholder="juan@correo.com">
+                </div>
+            </div>
+
+            <div class="form-row" style="margin-bottom:1rem;">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label">Servicio afectado</label>
+                    <select class="form-input" id="f-service">
+                        <option value="">Selecciona...</option>
+                        <option>🖥️ VPS</option>
+                        <option>🌐 Hosting cPanel</option>
+                        <option>🤖 Bot IA</option>
+                        <option>🔒 VPN</option>
+                        <option>💳 Facturación / Pago</option>
+                        <option>📋 Otro</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label">Asunto</label>
+                    <input type="text" class="form-input" id="f-subject" placeholder="Ej: No puedo conectarme por SSH">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Prioridad</label>
+                <div class="priority-group">
+                    <button class="prio-btn sel-low" onclick="setPrio(this,'low')"><span class="prio-icon">🟢</span>Baja</button>
+                    <button class="prio-btn" onclick="setPrio(this,'mid')"><span class="prio-icon">🟡</span>Media</button>
+                    <button class="prio-btn" onclick="setPrio(this,'high')"><span class="prio-icon">🔴</span>Urgente</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Descripción del problema</label>
+                <textarea class="form-input form-textarea" id="f-desc" placeholder="Describe qué estaba haciendo cuando ocurrió el problema, qué error ves exactamente, desde cuándo ocurre, y cualquier cosa que hayas intentado ya..."></textarea>
+            </div>
+
+            <div class="divider"></div>
+            <button class="submit-btn" onclick="submitTicket()">🎫 Enviar ticket</button>
+            <div class="submit-hint">Respuesta garantizada en &lt;2h · Lun–Vie 9am–9pm (CST)</div>
+        </div>
+
+        <div class="ticket-form" id="successPanel" style="display:none;">
+            <div class="success-box">
+                <div class="success-icon">✅</div>
+                <div class="success-title">Ticket enviado</div>
+                <div class="success-desc">Tu solicitud fue recibida. Te responderemos por email y puedes ver el estado desde tu Dashboard.</div>
+                <div class="ticket-num" id="ticketNum">Ticket #0044</div><br>
+                <button class="reset-btn" onclick="resetForm()">+ Abrir otro ticket</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATUS PANEL (right) -->
+    <div>
+        <div class="status-panel">
+            <div class="panel-head">
+                <div class="panel-head-title">📡 Estado del sistema</div>
+                <div class="all-ok"><span class="ok-dot"></span> Operativo</div>
+            </div>
+
+            <div class="status-list">
+                <div class="status-row">
+                    <div class="s-icon" style="background:rgba(99,179,237,0.1);">🖥️</div>
+                    <div class="s-info"><div class="s-name">Servidores VPS</div><div class="s-detail">mx-central-1 · mx-central-2</div></div>
+                    <div class="s-badge up"><span class="s-led"></span> Operativo</div>
+                </div>
+                <div class="status-row">
+                    <div class="s-icon" style="background:rgba(245,158,11,0.1);">🌐</div>
+                    <div class="s-info"><div class="s-name">Hosting cPanel</div><div class="s-detail">WHM · DNS · Correo</div></div>
+                    <div class="s-badge up"><span class="s-led"></span> Operativo</div>
+                </div>
+                <div class="status-row">
+                    <div class="s-icon" style="background:rgba(52,211,153,0.1);">🤖</div>
+                    <div class="s-info"><div class="s-name">Bot IA Workers</div><div class="s-detail">Activaciones en proceso</div></div>
+                    <div class="s-badge partial"><span class="s-led"></span> Procesando</div>
+                </div>
+                <div class="status-row">
+                    <div class="s-icon" style="background:rgba(167,139,250,0.1);">🔒</div>
+                    <div class="s-info"><div class="s-name">VPN WireGuard</div><div class="s-detail">Nodo México</div></div>
+                    <div class="s-badge up"><span class="s-led"></span> Operativo</div>
+                </div>
+                <div class="status-row">
+                    <div class="s-icon" style="background:rgba(99,179,237,0.08);">🔗</div>
+                    <div class="s-info"><div class="s-name">Red / Conectividad</div><div class="s-detail">BGP · Enlace 10 Gbps</div></div>
+                    <div class="s-badge up"><span class="s-led"></span> Operativo</div>
+                </div>
+                <div class="status-row">
+                    <div class="s-icon" style="background:rgba(99,179,237,0.08);">🗄️</div>
+                    <div class="s-info"><div class="s-name">Dashboard / API</div><div class="s-detail">Auth · Credenciales</div></div>
+                    <div class="s-badge up"><span class="s-led"></span> Operativo</div>
+                </div>
+            </div>
+
+            <div class="uptime-section">
+                <div class="uptime-title">Uptime — últimos 30 días</div>
+                <div class="uptime-row">
+                    <div class="uptime-label"><span class="uptime-name">VPS</span><span class="uptime-pct">99.98%</span></div>
+                    <div class="uptime-dots" id="d-vps"></div>
+                </div>
+                <div class="uptime-row">
+                    <div class="uptime-label"><span class="uptime-name">cPanel</span><span class="uptime-pct">99.9%</span></div>
+                    <div class="uptime-dots" id="d-cp"></div>
+                </div>
+                <div class="uptime-row">
+                    <div class="uptime-label"><span class="uptime-name">VPN</span><span class="uptime-pct">100%</span></div>
+                    <div class="uptime-dots" id="d-vpn"></div>
+                </div>
+                <div class="uptime-row">
+                    <div class="uptime-label"><span class="uptime-name">Bot IA</span><span class="uptime-pct">98.2%</span></div>
+                    <div class="uptime-dots" id="d-bot"></div>
+                </div>
+            </div>
+
+            <div class="contact-section">
+                <div class="contact-title">Contacto directo</div>
+                <a href="https://t.me/tuser" class="contact-link" target="_blank">
+                    <div class="cl-icon">💬</div>
+                    <div class="cl-info"><div class="cl-name">Telegram</div><div class="cl-sub">La vía más rápida</div></div>
+                    <span class="resp-badge">~15 min</span>
+                </a>
+                <a href="mailto:hola@nexcloudmx.com" class="contact-link">
+                    <div class="cl-icon">📧</div>
+                    <div class="cl-info"><div class="cl-name">Email</div><div class="cl-sub">hola@nexcloudmx.com</div></div>
+                    <span class="resp-badge">~2 h</span>
+                </a>
+                <a href="/dashboard" class="contact-link">
+                    <div class="cl-icon">🎫</div>
+                    <div class="cl-info"><div class="cl-name">Dashboard</div><div class="cl-sub">Ver tus tickets activos</div></div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    <div class="footer-inner">
+        <div class="footer-brand">NexCloud MX</div>
+        <div class="footer-text">© 2025 NexCloud MX · Infraestructura IA desde México 🇲🇽</div>
+    </div>
+</footer>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+    // Build uptime dots
+    function buildDots(id, misses, partials) {
+        const c = document.getElementById(id);
+        for (let i = 0; i < 30; i++) {
+            const d = document.createElement('div');
+            d.className = 'uptime-dot' + (misses.includes(i) ? ' miss' : partials.includes(i) ? ' partial' : '');
+            c.appendChild(d);
+        }
+    }
+    buildDots('d-vps',  [],       [14]);
+    buildDots('d-cp',   [22],     []);
+    buildDots('d-vpn',  [],       []);
+    buildDots('d-bot',  [5,17,28],[8,20]);
+
+    // Priority
+    function setPrio(btn, level) {
+        document.querySelectorAll('.prio-btn').forEach(b => b.className = 'prio-btn');
+        btn.className = 'prio-btn sel-' + level;
+    }
+
+    // Submit
+    function submitTicket() {
+        const name    = document.getElementById('f-name').value.trim();
+        const email   = document.getElementById('f-email').value.trim();
+        const service = document.getElementById('f-service').value;
+        const subject = document.getElementById('f-subject').value.trim();
+        const desc    = document.getElementById('f-desc').value.trim();
+        if (!name || !email || !service || !subject || !desc) {
+            toast('⚠️ Por favor completa todos los campos.'); return;
+        }
+        if (!email.includes('@')) { toast('⚠️ Ingresa un email válido.'); return; }
+        const num = '#0' + (Math.floor(Math.random() * 900) + 100);
+        document.getElementById('ticketNum').textContent = 'Ticket ' + num;
+        document.getElementById('formPanel').style.display = 'none';
+        document.getElementById('successPanel').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetForm() {
+        document.getElementById('formPanel').style.display = 'block';
+        document.getElementById('successPanel').style.display = 'none';
+        ['f-name','f-email','f-subject','f-desc'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('f-service').value = '';
+    }
+
+    function toast(msg) {
+        const w = document.getElementById('toastWrap');
+        const t = document.createElement('div');
+        t.className = 'toast'; t.textContent = msg;
+        w.appendChild(t);
+        setTimeout(() => t.remove(), 4500);
+    }
+</script>
+</body>
+</html>

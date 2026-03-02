@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — NexCloud MX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #060810;
+            --bg2: #0c0f1a;
+            --surface: #111520;
+            --surface2: #181d2e;
+            --surface3: #1e2438;
+            --border: rgba(255,255,255,0.07);
+            --border-glow: rgba(99,179,237,0.25);
+            --text: #e8ecf4;
+            --muted: #6b7280;
+            --muted2: #9ca3af;
+            --accent: #63b3ed;
+            --accent2: #a78bfa;
+            --accent3: #34d399;
+            --accent4: #f59e0b;
+            --accent5: #fb7185;
+            --danger: #f87171;
+            --glow: rgba(99,179,237,0.10);
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'DM Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* GRID BG */
+        body::after {
+            content:'';
+            position:fixed; inset:0;
+            background-image:
+                linear-gradient(rgba(99,179,237,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99,179,237,0.025) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events:none; z-index:0;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: 240px;
+            min-height: 100vh;
+            background: var(--bg2);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed; top:0; left:0; bottom:0;
+            z-index: 10;
+            padding: 0;
+        }
+        .sidebar-logo {
+            padding: 1.5rem 1.5rem 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; gap: 10px;
+            font-family: 'Syne', sans-serif;
+            font-size: 1.1rem; font-weight: 800; color: #fff;
+            text-decoration: none;
+        }
+        .logo-dot {
+            width: 8px; height: 8px;
+            background: var(--accent3);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent3);
+            animation: pulse 2s infinite;
+            flex-shrink: 0;
+        }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        .logo-sub { font-size: 0.65rem; color: var(--muted); display: block; font-weight: 400; }
+
+        .sidebar-user {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; gap: 0.75rem;
+        }
+        .user-avatar {
+            width: 36px; height: 36px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.9rem; font-weight: 800; color: #000;
+            flex-shrink: 0;
+        }
+        .user-info { overflow: hidden; }
+        .user-name { font-size: 0.82rem; color: #fff; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-plan {
+            font-size: 0.68rem; color: var(--accent);
+            background: rgba(99,179,237,0.1);
+            border: 1px solid rgba(99,179,237,0.2);
+            padding: 0.1rem 0.4rem; border-radius: 4px;
+            display: inline-block; margin-top: 2px;
+        }
+
+        .sidebar-nav { flex: 1; padding: 1rem 0; overflow-y: auto; }
+        .nav-section-title {
+            font-size: 0.65rem; letter-spacing: 0.12em;
+            color: var(--muted); text-transform: uppercase;
+            padding: 0.5rem 1.5rem; margin-top: 0.5rem;
+        }
+        .nav-item {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.65rem 1.5rem;
+            color: var(--muted); font-size: 0.82rem;
+            cursor: pointer; transition: all 0.2s;
+            border-left: 2px solid transparent;
+            text-decoration: none;
+        }
+        .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+        .nav-item.active {
+            color: var(--accent);
+            background: rgba(99,179,237,0.07);
+            border-left-color: var(--accent);
+        }
+        .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+        .nav-badge {
+            margin-left: auto;
+            background: var(--accent5);
+            color: #fff; font-size: 0.62rem;
+            padding: 0.1rem 0.4rem; border-radius: 10px;
+            font-family: 'Syne', sans-serif; font-weight: 700;
+        }
+
+        .sidebar-bottom {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+        .sidebar-bottom a {
+            display: flex; align-items: center; gap: 0.6rem;
+            color: var(--muted); font-size: 0.78rem;
+            text-decoration: none; padding: 0.4rem 0;
+            transition: color 0.2s;
+        }
+        .sidebar-bottom a:hover { color: var(--danger); }
+
+        /* ── MAIN ── */
+        .main {
+            margin-left: 240px;
+            flex: 1;
+            padding: 2rem 2.5rem;
+            position: relative; z-index: 1;
+            max-width: 1100px;
+        }
+
+        /* TOP BAR */
+        .topbar {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 2.5rem;
+        }
+        .page-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.6rem; font-weight: 800; color: #fff;
+        }
+        .page-subtitle { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+        .topbar-actions { display: flex; gap: 0.75rem; align-items: center; }
+        .status-pill {
+            display: flex; align-items: center; gap: 6px;
+            background: rgba(52,211,153,0.08);
+            border: 1px solid rgba(52,211,153,0.25);
+            padding: 0.4rem 0.9rem; border-radius: 100px;
+            font-size: 0.72rem; color: var(--accent3);
+        }
+        .status-dot { width: 6px; height: 6px; background: var(--accent3); border-radius: 50%; animation: pulse 2s infinite; }
+
+        /* ── OVERVIEW CARDS ── */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .ov-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            position: relative; overflow: hidden;
+            transition: all 0.3s;
+        }
+        .ov-card:hover { border-color: rgba(255,255,255,0.12); transform: translateY(-2px); }
+        .ov-card::before {
+            content:'';
+            position:absolute; top:0; left:0; right:0; height:2px;
+            background: var(--card-line, var(--accent));
+            opacity: 0.6;
+        }
+        .ov-label { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.75rem; }
+        .ov-value {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.8rem; font-weight: 800; color: #fff; line-height: 1;
+            margin-bottom: 0.4rem;
+        }
+        .ov-sub { font-size: 0.72rem; color: var(--muted); }
+        .ov-icon {
+            position: absolute; top: 1.25rem; right: 1.25rem;
+            font-size: 1.4rem; opacity: 0.4;
+        }
+
+        /* ── SECTION HEADER ── */
+        .section-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.25rem;
+        }
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem; font-weight: 700; color: #fff;
+        }
+        .section-label-tag {
+            font-size: 0.68rem; letter-spacing: 0.1em; color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        /* ── SERVICE PANELS ── */
+        .services-stack { display: flex; flex-direction: column; gap: 1.25rem; margin-bottom: 2rem; }
+
+        .service-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .service-panel:hover { border-color: rgba(255,255,255,0.11); }
+
+        .panel-header {
+            display: flex; align-items: center;
+            padding: 1.1rem 1.5rem;
+            gap: 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s;
+        }
+        .panel-header:hover { background: rgba(255,255,255,0.02); }
+        .panel-header.open { border-bottom-color: var(--border); }
+
+        .panel-icon {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; flex-shrink: 0;
+        }
+        .panel-meta { flex: 1; }
+        .panel-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.95rem; font-weight: 700; color: #fff;
+        }
+        .panel-info { font-size: 0.75rem; color: var(--muted); margin-top: 1px; }
+
+        .panel-status {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 0.72rem; padding: 0.3rem 0.75rem;
+            border-radius: 100px; border: 1px solid;
+            flex-shrink: 0;
+        }
+        .panel-status.active { color: var(--accent3); border-color: rgba(52,211,153,0.3); background: rgba(52,211,153,0.08); }
+        .panel-status.pending { color: var(--accent4); border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.08); }
+        .panel-status.inactive { color: var(--muted); border-color: var(--border); background: transparent; }
+        .status-led { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+        .active .status-led { animation: pulse 2s infinite; }
+
+        .panel-chevron {
+            color: var(--muted); font-size: 0.75rem;
+            transition: transform 0.3s; margin-left: 0.5rem;
+        }
+        .panel-header.open .panel-chevron { transform: rotate(180deg); }
+
+        /* Panel Body */
+        .panel-body {
+            display: none; padding: 1.5rem;
+            animation: fadeDown 0.25s ease;
+        }
+        .panel-body.open { display: block; }
+        @keyframes fadeDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+
+        .cred-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+        .cred-item {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+        }
+        .cred-label { font-size: 0.68rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.5rem; }
+        .cred-value-wrap {
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .cred-value {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.85rem; color: var(--text);
+            background: var(--surface3);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.45rem 0.75rem;
+            flex: 1; overflow: hidden;
+            text-overflow: ellipsis; white-space: nowrap;
+        }
+        .cred-value.secret { letter-spacing: 0.15em; color: var(--muted); }
+        .cred-value.secret.revealed { letter-spacing: normal; color: var(--text); }
+        .copy-btn {
+            background: var(--surface3);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 0.45rem 0.6rem;
+            border-radius: 6px;
+            cursor: pointer; font-size: 0.8rem;
+            transition: all 0.2s; flex-shrink: 0;
+        }
+        .copy-btn:hover { border-color: var(--border-glow); color: var(--accent); }
+        .copy-btn.copied { color: var(--accent3); border-color: rgba(52,211,153,0.3); }
+        .reveal-btn {
+            background: none; border: none;
+            color: var(--muted); cursor: pointer;
+            font-size: 0.8rem; padding: 0 0.2rem;
+            transition: color 0.2s;
+        }
+        .reveal-btn:hover { color: var(--text); }
+
+        /* Progress bar */
+        .usage-bar-wrap { margin-bottom: 0.4rem; }
+        .usage-bar-label { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--muted); margin-bottom: 0.4rem; }
+        .usage-bar {
+            height: 4px; background: var(--surface3);
+            border-radius: 2px; overflow: hidden;
+        }
+        .usage-fill {
+            height: 100%; border-radius: 2px;
+            background: linear-gradient(90deg, var(--fill-start, var(--accent)), var(--fill-end, var(--accent2)));
+            transition: width 1s ease;
+        }
+
+        /* Panel actions */
+        .panel-actions {
+            display: flex; gap: 0.75rem; flex-wrap: wrap;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            margin-top: 1rem;
+        }
+        .act-btn {
+            display: flex; align-items: center; gap: 0.4rem;
+            font-size: 0.78rem; padding: 0.5rem 1rem;
+            border-radius: 6px; cursor: pointer;
+            transition: all 0.2s; text-decoration: none;
+            border: 1px solid var(--border);
+            background: var(--surface2); color: var(--muted);
+            font-family: 'DM Mono', monospace;
+        }
+        .act-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.15); }
+        .act-btn.primary { background: rgba(99,179,237,0.1); border-color: var(--border-glow); color: var(--accent); }
+        .act-btn.primary:hover { background: rgba(99,179,237,0.18); }
+        .act-btn.danger { color: var(--danger); }
+        .act-btn.danger:hover { border-color: rgba(248,113,113,0.3); background: rgba(248,113,113,0.07); }
+
+        /* ── TIMELINE ── */
+        .timeline { margin-bottom: 2rem; }
+        .timeline-item {
+            display: flex; gap: 1rem;
+            padding: 0.9rem 0;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+        .timeline-item:last-child { border-bottom: none; }
+        .t-icon {
+            width: 32px; height: 32px; flex-shrink: 0;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.85rem;
+        }
+        .t-content { flex: 1; }
+        .t-title { font-size: 0.82rem; color: var(--text); }
+        .t-time { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+        .t-badge {
+            font-size: 0.65rem; padding: 0.15rem 0.5rem;
+            border-radius: 4px; font-family: 'Syne', sans-serif;
+            font-weight: 700; margin-left: 0.5rem;
+        }
+        .t-badge.ok { background: rgba(52,211,153,0.15); color: var(--accent3); }
+        .t-badge.warn { background: rgba(245,158,11,0.15); color: var(--accent4); }
+        .t-badge.info { background: rgba(99,179,237,0.15); color: var(--accent); }
+
+        /* ── BOTTOM GRID ── */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+        .widget {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem;
+        }
+        .widget-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.88rem; font-weight: 700; color: #fff;
+            margin-bottom: 1.25rem;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .ticket-item {
+            display: flex; justify-content: space-between;
+            align-items: flex-start;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+            gap: 1rem;
+        }
+        .ticket-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .ticket-subject { font-size: 0.8rem; color: var(--text); }
+        .ticket-meta { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
+        .ticket-status {
+            font-size: 0.65rem; padding: 0.2rem 0.6rem;
+            border-radius: 4px; white-space: nowrap; flex-shrink: 0;
+            font-family: 'Syne', sans-serif; font-weight: 700;
+        }
+        .ticket-status.open { background: rgba(245,158,11,0.15); color: var(--accent4); }
+        .ticket-status.closed { background: rgba(107,114,128,0.15); color: var(--muted); }
+        .ticket-status.resolved { background: rgba(52,211,153,0.15); color: var(--accent3); }
+
+        .renewal-item {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.7rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .renewal-item:last-child { border-bottom: none; }
+        .renewal-icon {
+            width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem; flex-shrink: 0;
+        }
+        .renewal-name { font-size: 0.8rem; color: var(--text); flex: 1; }
+        .renewal-date { font-size: 0.72rem; color: var(--muted); }
+        .renewal-price { font-size: 0.82rem; font-family: 'Syne', sans-serif; font-weight: 700; color: var(--accent); }
+
+        /* PENDING NOTICE */
+        .pending-notice {
+            background: rgba(245,158,11,0.07);
+            border: 1px solid rgba(245,158,11,0.2);
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            display: flex; align-items: flex-start; gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .pending-notice-icon { font-size: 1.2rem; flex-shrink: 0; }
+        .pending-notice-text { font-size: 0.8rem; color: var(--muted2); line-height: 1.6; }
+        .pending-notice-text strong { color: var(--accent4); }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            display: none; justify-content: center; align-items: center;
+            z-index: 100;
+        }
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 2rem; width: 90%; max-width: 440px;
+        }
+        .modal-head {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .modal-head h3 { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; color:#fff; }
+        .close-btn { background:none; border:none; color:var(--muted); font-size:1.5rem; cursor:pointer; }
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display:block; font-size:0.75rem; color:var(--muted); margin-bottom:0.5rem; letter-spacing:0.05em; }
+        .form-input {
+            width:100%; background:var(--bg2);
+            border:1px solid var(--border); border-radius:8px;
+            padding:0.7rem 1rem; color:var(--text);
+            font-family:'DM Mono',monospace; font-size:0.88rem;
+            transition:border-color 0.2s;
+        }
+        .form-input:focus { outline:none; border-color:var(--border-glow); }
+        .form-textarea { resize:vertical; min-height:80px; }
+        .modal-submit {
+            width:100%;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color:#000; border:none; border-radius:8px;
+            padding:0.8rem; font-family:'Syne',sans-serif;
+            font-weight:700; font-size:0.9rem; cursor:pointer;
+            margin-top:0.5rem; transition:all 0.3s;
+        }
+        .modal-submit:hover { box-shadow: 0 8px 25px rgba(99,179,237,0.3); }
+
+        /* TOAST */
+        .toast-container { position:fixed; bottom:1.5rem; right:1.5rem; z-index:200; display:flex; flex-direction:column; gap:0.5rem; }
+        .toast {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent3);
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            font-size: 0.8rem; color: var(--text);
+            animation: slideUp 0.3s ease;
+            max-width: 300px;
+        }
+        @keyframes slideUp { from{transform:translateY(10px);opacity:0} to{transform:translateY(0);opacity:1} }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .sidebar { display: none; }
+            .main { margin-left: 0; padding: 1.5rem; }
+            .overview-grid { grid-template-columns: repeat(2,1fr); }
+            .bottom-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 500px) {
+            .overview-grid { grid-template-columns: 1fr 1fr; }
+            .cred-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <a href="/" class="sidebar-logo">
+        <div class="logo-dot"></div>
+        <div>
+            NexCloud MX
+            <span class="logo-sub">Panel de cliente</span>
+        </div>
+    </a>
+    <div class="sidebar-user">
+        <div class="user-avatar">JL</div>
+        <div class="user-info">
+            <div class="user-name">Juan López</div>
+            <span class="user-plan">Plan VPS + IA</span>
+        </div>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section-title">Principal</div>
+        <a class="nav-item active" onclick="showSection('overview')">
+            <span class="nav-icon">⬛</span> Resumen
+        </a>
+        <a class="nav-item" onclick="showSection('services')">
+            <span class="nav-icon">🖥️</span> Mis Servicios
+        </a>
+        <a class="nav-item" onclick="showSection('credentials')">
+            <span class="nav-icon">🔑</span> Credenciales
+        </a>
+        <div class="nav-section-title">Soporte</div>
+        <a class="nav-item" onclick="showSection('tickets')">
+            <span class="nav-icon">🎫</span> Tickets
+            <span class="nav-badge">1</span>
+        </a>
+        <a class="nav-item" href="/help">
+            <span class="nav-icon">❓</span> Centro de Ayuda
+        </a>
+        <div class="nav-section-title">Cuenta</div>
+        <a class="nav-item" onclick="showSection('billing')">
+            <span class="nav-icon">💳</span> Facturación
+        </a>
+    </nav>
+    <div class="sidebar-bottom">
+        <a href="/auth/logout">🚪 Cerrar sesión</a>
+    </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main" id="mainContent">
+
+    <!-- ── OVERVIEW ── -->
+    <div id="section-overview">
+        <div class="topbar">
+            <div>
+                <div class="page-title">Bienvenido, Juan 👋</div>
+                <div class="page-subtitle">Último acceso: hoy, 10:32 AM</div>
+            </div>
+            <div class="topbar-actions">
+                <div class="status-pill"><span class="status-dot"></span> Todos los sistemas activos</div>
+            </div>
+        </div>
+
+        <!-- OVERVIEW CARDS -->
+        <div class="overview-grid">
+            <div class="ov-card" style="--card-line: #63b3ed;">
+                <div class="ov-label">Servicios activos</div>
+                <div class="ov-value">4</div>
+                <div class="ov-sub">VPS · cPanel · Bot IA · VPN</div>
+                <div class="ov-icon">🖥️</div>
+            </div>
+            <div class="ov-card" style="--card-line: #34d399;">
+                <div class="ov-label">Uptime promedio</div>
+                <div class="ov-value">99.9<span style="font-size:1rem">%</span></div>
+                <div class="ov-sub">Últimos 30 días</div>
+                <div class="ov-icon">📈</div>
+            </div>
+            <div class="ov-card" style="--card-line: #f59e0b;">
+                <div class="ov-label">Próxima renovación</div>
+                <div class="ov-value">12</div>
+                <div class="ov-sub">días · 01/04/2025</div>
+                <div class="ov-icon">📅</div>
+            </div>
+            <div class="ov-card" style="--card-line: #a78bfa;">
+                <div class="ov-label">Tickets abiertos</div>
+                <div class="ov-value">1</div>
+                <div class="ov-sub">Respuesta en &lt;2h</div>
+                <div class="ov-icon">🎫</div>
+            </div>
+        </div>
+
+        <!-- PENDING NOTICE -->
+        <div class="pending-notice">
+            <div class="pending-notice-icon">⏳</div>
+            <div class="pending-notice-text">
+                <strong>Servicio en proceso de activación:</strong> Tu <strong>Bot IA</strong> está siendo configurado. Recibirás las credenciales en las próximas 2-4 horas vía Telegram y también aparecerán aquí. Si tienes dudas, <a href="#" onclick="openTicketModal()" style="color:var(--accent);text-decoration:none;">abre un ticket</a>.
+            </div>
+        </div>
+
+        <!-- SERVICES -->
+        <div class="section-header">
+            <div class="section-title">Estado de servicios</div>
+            <div class="section-label-tag">4 de 4 activos</div>
+        </div>
+        <div class="services-stack">
+
+            <!-- VPS -->
+            <div class="service-panel">
+                <div class="panel-header" onclick="togglePanel(this)">
+                    <div class="panel-icon" style="background:rgba(99,179,237,0.1); border:1px solid rgba(99,179,237,0.2);">🖥️</div>
+                    <div class="panel-meta">
+                        <div class="panel-name">VPS — Plan Pro</div>
+                        <div class="panel-info">mx-central-1 · Ubuntu 22.04 · 2vCPU / 2GB RAM / 20GB SSD</div>
+                    </div>
+                    <div class="panel-status active"><span class="status-led"></span> Activo</div>
+                    <div class="panel-chevron">▼</div>
+                </div>
+                <div class="panel-body">
+                    <div class="cred-grid">
+                        <div class="cred-item">
+                            <div class="cred-label">IP Dedicada</div>
+                            <div class="cred-value-wrap">
+                                <div class="cred-value" id="vps-ip">187.216.xxx.xxx</div>
+                                <button class="copy-btn" onclick="copyValue('vps-ip', this)">📋</button>
+                            </div>
+                        </div>
+                        <div class="cred-item">
+                            <div class="cred-label">Usuario SSH</div>
+                            <div class="cred-value-wrap">
+                                <div class="cred-value" id="vps-user">nexuser</div>
+                                <button class="copy-btn" onclick="copyValue('vps-user', this)">📋</button>
+                            </div>
+                        </div>
+                        <div class="cred-item">
+                            <div class="cred-label">Contraseña SSH</div>
+                            <div class="cred-value-wrap">
+                                <div class="cred-value secret" id="vps-pass">••••••••••••</div>
+                                <button class="reveal-btn" onclick="revealSecret('vps-pass','Nx8!kP2@mZ')">👁</button>
+                                <button class="copy-btn" onclick="copyValue('vps-pass', this)">📋</button>
+                            </div>
+                        </div>
+                        <div class="cred-item">
+                            <div class="cred-label">Puerto SSH</div>
+                            <div class="cred-value-wrap">
+                                <div class="cred-value" id="vps-port">22</div>
+                                <button class="copy-btn" onclick="copyValue('vps-port', this)">📋</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="usage-bar-wrap">
+                        <div class="usage-bar-label"><span>CPU</span><span>34%</span></div>
+                        <div class="usage-bar"><div class="usage-fill" style="--fill-start:#63b3ed;--fill-end:#a78bfa;width:34%"></div></div>
+                    </div>
+                    <div class="usage-bar-wrap" style="margin-top:0.75rem;">
+                        <div class="usage-bar-label"><span>RAM</span><span>780 MB / 2 GB</span></div>
+                        <div class="usage-bar"><div class="usage-fill" style="--fill-start:#34d399;--fill-end:#63b3ed;width:38%"></div></div>
+                    </div>
+                    <div class="usage-bar-wrap" style="margin-top:0.75rem;">
+                        <div class="usage-bar-label"><span>Disco</span><span>7.2 GB / 20 GB</span></div>
+                        <div class="usage-bar"><div class="usage-fill" style="--fill-start:#f59e0b;--fill-end:#fb7185;width:36%"></div></div>
+                    </div>
+                    <div class="panel-actions">
+                        <button class="act-btn primary">🔄 Reiniciar</button>
+                        <a href="ssh://nexuser@187.216.x.x" class="act-btn">💻 Conectar SSH</a>
+                        <button class="act-btn">📊 Ver consola</button>
+                        <button class="act-btn danger">⏹ Apagar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOT IA -->
+            <div class="service-panel">
+                <div class="panel-header" onclick="togglePanel(this)">
+                    <div class="panel-icon" style="background:rgba(52,211,153,0.1); border:1px solid rgba(52,211,153,0.2);">🤖</div>
+                    <div class="panel-meta">
+                        <div class="panel-name">Bot IA — Telegram</div>
+                        <div class="panel-info">Modelo GPT-4o-mini · 500K tokens/mes · Activación en progreso</div>
+                    </div>
+                    <div class="panel-status pending"><span class="status-led"></span> Activando...</div>
+                    <div class="panel-chevron">▼</div>
+                </div>
+                <div class="panel-body">
+                    <div class="pending-notice" style="margin-bottom:1rem;">
+                        <div class="pending-notice-icon">⚙️</div>
+                        <div class="pending-notice-text">Tu bot está siendo desplegado. Las credenciales se habilitarán automáticamente cuando el proceso finalice (estimado: 2-4 horas).</div>
+                    </div>
+                    <div class="cred-grid">
+                        <div class="cred-item" style="opacity:0.45;">
+                            <div class="cred-label">Bot Token</div>
+                            <div class="cred-value-wrap">
+                                <div class="cred-value secret">Pendiente de activación</div>
+                            </div>
+                        </div>
+                        <div class="cred-item" style="opacity:0.45;">
+                            <div class="cred-label">Username del Bot</div>
+                            <div class="cred-value-wrap">
+                                <div class="cred-value">Pendiente...</div>
+                            </div>
+                        </div>
+                        <div class="cred-item" style="opacity:0.45;">
+                            <div class="cred-label">API Key IA</div>
+                            <div class="cred-value-wrap">
+                                <div class="cred-value secret">Pendiente...</div>
+                            </div>
+                        </div>
+                        <div class="cred-item">
+                            <div class="cred-label">Tokens usados</div>
+                            <div class="cred-value-wrap">
+                                <div class="cred-value">0 / 500,000</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-actions">
+                        <button class="act-btn" onclick="openTicketModal()">🎫 Consultar estado</button>
+                        <a href="https://t.me/tuser" class="act-btn primary" target="_blank">💬 Contactar soporte</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VPN -->
+            <div class="service-panel">
+                <div class="panel-header" onclick="togglePanel(this)">
+                    <div class="panel-icon" style="background:rgba(167,139,250,0.1); border:1px solid rgba(167,139,250,0.2);">🔒</div>
+                    <div class="panel-meta">
+                        <div class="panel-name">VPN Segura — WireGuard</div>
+                        <div class="panel-info">IP Mexicana · 1 dispositivo · Sin logs</div>
+                    </div>
+                    <div class="panel-status active"><span class="status-led"></span> Activo</div>
+                    <div class="panel-chevron">▼</div>
+                </div>
+                <div class="panel-body">
+                    <div class="cred-grid">
+                        <div class="cred-item">
+                            <div class="cred-label">IP del servidor VPN</div>
+                            <div class="cred-value-wrap">
+                                <div class="cred-value" id="vpn-ip">187.216.44.12</div>
+                                <button class="copy-btn" onclick="copyValue('vpn-ip',this)">📋</button>
+                            </div>
+                        </div>
+                        <div class="cred-item">
+                            <div class="cred-label">Puerto WireGuard</div>
+                            <div class="cred-value-wrap">
+                                <div class="cred-value" id="vpn-port">51820</div>
+                                <button class="copy-btn" onclick="copyValue('vpn-port',this)">📋</button>
+                            </div>
+                        </div>
+                        <div class="cred-item">
+                            <div class="cred-label">Clave privada</div>
+                            <div class="cred-value-wrap">
+                                <div class="cred-value secret" id="vpn-key">••••••••••••••••••••••••••</div>
+                                <button class="reveal-btn" onclick="revealSecret('vpn-key','mK2Px9Lq...')">👁</button>
+                                <button class="copy-btn" onclick="copyValue('vpn-key',this)">📋</button>
+                            </div>
+                        </div>
+                        <div class="cred-item">
+                            <div class="cred-label">Archivo de configuración</div>
+                            <div class="cred-value-wrap">
+                                <button class="act-btn primary" style="width:100%; justify-content:center;" onclick="showToast('⬇️ Descargando wg0.conf...')">⬇️ Descargar .conf</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:1rem; text-align:center;">
+                        <div style="font-size:0.72rem; color:var(--muted); margin-bottom:0.75rem; letter-spacing:0.06em; text-transform:uppercase;">Escanear con WireGuard App</div>
+                        <div style="width:100px; height:100px; background: var(--surface3); border-radius:8px; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:2rem;">📱</div>
+                        <div style="font-size:0.7rem; color:var(--muted); margin-top:0.5rem;">QR generado al activar servicio</div>
+                    </div>
+                    <div class="panel-actions">
+                        <button class="act-btn primary" onclick="showToast('⬇️ Descargando configuración...')">⬇️ Descargar config</button>
+                        <button class="act-btn">🔄 Regenerar claves</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HOSTING cPANEL -->
+            <div class="service-panel">
+                <div class="panel-header" onclick="togglePanel(this)">
+                    <div class="panel-icon" style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.2);">🌐</div>
+                    <div class="panel-meta">
+                        <div class="panel-name">Hosting cPanel</div>
+                        <div class="panel-info">tudominio.com · 5 GB SSD · SSL activo · WordPress instalado</div>
+                    </div>
+                    <div class="panel-status active"><span class="status-led"></span> Activo</div>
+                    <div class="panel-chevron">▼</div>
+                </div>
+                <div class="panel-body">
+                    <div class="cred-grid">
+                        <div class="cred-item">
+                            <div class="cred-label">URL de acceso cPanel</div>
+                            <div class="cred-value-wrap">
+                                <div class="cred-value" id="cp-url">tudominio.com:2083</div>
+                                <button class="copy-btn" onclick="copyValue('cp-url',this)">📋</button>
+                            </div>
+                        </div>
+                        <div class="cred-item">
+                            <div class="cred-label">Usuario cPanel</div>
+                            <div class="cred-value-wrap">
+                                <div class="cred-value" id="cp-user">nexjuanl</div>
+                                <button class="copy-btn" onclick="copyValue('cp-user',this)">📋</button>
+                            </div>
+                        </div>
+                        <div class="cred-item">
+                            <div class="cred-label">Contraseña cPanel</div>
+                            <div class="cred-value-wrap">
+                                <div class="cred-value secret" id="cp-pass">••••••••••••</div>
+                                <button class="reveal-btn" onclick="revealSecret('cp-pass','Cp@5xN2!rT')">👁</button>
+                                <button class="copy-btn" onclick="copyValue('cp-pass',this)">📋</button>
+                            </div>
+                        </div>
+                        <div class="cred-item">
+                            <div class="cred-label">Servidor FTP</div>
+                            <div class="cred-value-wrap">
+                                <div class="cred-value" id="cp-ftp">ftp.tudominio.com</div>
+                                <button class="copy-btn" onclick="copyValue('cp-ftp',this)">📋</button>
+                            </div>
+                        </div>
+                        <div class="cred-item">
+                            <div class="cred-label">Servidor correo (SMTP)</div>
+                            <div class="cred-value-wrap">
+                                <div class="cred-value" id="cp-smtp">mail.tudominio.com</div>
+                                <button class="copy-btn" onclick="copyValue('cp-smtp',this)">📋</button>
+                            </div>
+                        </div>
+                        <div class="cred-item">
+                            <div class="cred-label">Nameservers DNS</div>
+                            <div class="cred-value-wrap">
+                                <div class="cred-value" id="cp-ns" style="font-size:0.75rem;">ns1.nexcloudmx.com · ns2.nexcloudmx.com</div>
+                                <button class="copy-btn" onclick="copyValue('cp-ns',this)">📋</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:0.75rem;">
+                        <div class="usage-bar-wrap">
+                            <div class="usage-bar-label"><span>Espacio en disco</span><span>1.8 GB / 5 GB</span></div>
+                            <div class="usage-bar"><div class="usage-fill" style="--fill-start:#f59e0b;--fill-end:#fb7185;width:36%"></div></div>
+                        </div>
+                        <div class="usage-bar-wrap" style="margin-top:0.75rem;">
+                            <div class="usage-bar-label"><span>Correos creados</span><span>2 / 3</span></div>
+                            <div class="usage-bar"><div class="usage-fill" style="--fill-start:#63b3ed;--fill-end:#a78bfa;width:66%"></div></div>
+                        </div>
+                        <div class="usage-bar-wrap" style="margin-top:0.75rem;">
+                            <div class="usage-bar-label"><span>Bases de datos MySQL</span><span>1 / 3</span></div>
+                            <div class="usage-bar"><div class="usage-fill" style="--fill-start:#34d399;--fill-end:#63b3ed;width:33%"></div></div>
+                        </div>
+                    </div>
+                    <div class="panel-actions">
+                        <a href="https://tudominio.com:2083" target="_blank" class="act-btn primary">🔑 Abrir cPanel</a>
+                        <a href="https://tudominio.com:2096" target="_blank" class="act-btn">📧 Webmail</a>
+                        <button class="act-btn" onclick="showToast('📁 Abriendo File Manager...')">📁 File Manager</button>
+                        <button class="act-btn" onclick="showToast('🔄 Restableciendo contraseña...')">🔄 Cambiar contraseña</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- BOTTOM GRID -->
+        <div class="bottom-grid">
+            <!-- Actividad reciente -->
+            <div class="widget">
+                <div class="widget-title">🕐 Actividad reciente</div>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="t-icon">🖥️</div>
+                        <div class="t-content">
+                            <div class="t-title">VPS reiniciado correctamente <span class="t-badge ok">OK</span></div>
+                            <div class="t-time">Hoy, 09:15 AM</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="t-icon">🤖</div>
+                        <div class="t-content">
+                            <div class="t-title">Bot IA — solicitud recibida <span class="t-badge warn">Procesando</span></div>
+                            <div class="t-time">Hoy, 08:00 AM</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="t-icon">💳</div>
+                        <div class="t-content">
+                            <div class="t-title">Pago recibido $249 MXN <span class="t-badge info">Plan VPS</span></div>
+                            <div class="t-time">Ayer, 06:45 PM</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="t-icon">🔒</div>
+                        <div class="t-content">
+                            <div class="t-title">VPN activada — configuración enviada <span class="t-badge ok">OK</span></div>
+                            <div class="t-time">01/03/2025</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Próximas renovaciones -->
+            <div class="widget">
+                <div class="widget-title">📅 Próximas renovaciones</div>
+                <div class="renewal-item">
+                    <div class="renewal-icon" style="background:rgba(99,179,237,0.1);">🖥️</div>
+                    <div class="renewal-name">VPS — Plan Pro</div>
+                    <div>
+                        <div class="renewal-date">01/04/2025</div>
+                        <div class="renewal-price">$249 MXN</div>
+                    </div>
+                </div>
+                <div class="renewal-item">
+                    <div class="renewal-icon" style="background:rgba(52,211,153,0.1);">🤖</div>
+                    <div class="renewal-name">Bot IA</div>
+                    <div>
+                        <div class="renewal-date">01/04/2025</div>
+                        <div class="renewal-price">$149 MXN</div>
+                    </div>
+                </div>
+                <div class="renewal-item">
+                    <div class="renewal-icon" style="background:rgba(167,139,250,0.1);">🔒</div>
+                    <div class="renewal-name">VPN Segura</div>
+                    <div>
+                        <div class="renewal-date">01/04/2025</div>
+                        <div class="renewal-price">$20 MXN</div>
+                    </div>
+                </div>
+                <div style="margin-top:1.25rem; padding-top:1rem; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:0.78rem; color:var(--muted);">Total próximo cobro</span>
+                    <span style="font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; color:#fff;">$418 MXN</span>
+                </div>
+                <button class="act-btn primary" style="width:100%; justify-content:center; margin-top:1rem;" onclick="showToast('💳 Redirigiendo a pago...')">💳 Pagar ahora</button>
+            </div>
+        </div>
+
+        <!-- TICKETS WIDGET -->
+        <div class="widget" style="margin-top:1.25rem;">
+            <div class="widget-title" style="justify-content:space-between; display:flex;">
+                <span>🎫 Mis tickets de soporte</span>
+                <button class="act-btn primary" style="padding:0.3rem 0.9rem; font-size:0.72rem;" onclick="openTicketModal()">+ Nuevo ticket</button>
+            </div>
+            <div class="ticket-item">
+                <div>
+                    <div class="ticket-subject">¿Cuándo estarán listas las credenciales del Bot IA?</div>
+                    <div class="ticket-meta">Ticket #0043 · Abierto hace 2 horas</div>
+                </div>
+                <span class="ticket-status open">Abierto</span>
+            </div>
+            <div class="ticket-item">
+                <div>
+                    <div class="ticket-subject">Configuración de Nginx en VPS</div>
+                    <div class="ticket-meta">Ticket #0039 · Cerrado hace 3 días</div>
+                </div>
+                <span class="ticket-status resolved">Resuelto</span>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- TICKET MODAL -->
+<div class="modal-overlay" id="ticketModal">
+    <div class="modal">
+        <div class="modal-head">
+            <h3>Nuevo ticket de soporte</h3>
+            <button class="close-btn" onclick="closeModal('ticketModal')">&times;</button>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Servicio afectado</label>
+            <select class="form-input">
+                <option>VPS — Plan Pro</option>
+                <option>Bot IA — Telegram</option>
+                <option>VPN Segura</option>
+                <option>Facturación</option>
+                <option>Otro</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Asunto</label>
+            <input type="text" class="form-input" placeholder="Describe brevemente el problema">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Descripción</label>
+            <textarea class="form-input form-textarea" placeholder="Cuéntanos todos los detalles..."></textarea>
+        </div>
+        <button class="modal-submit" onclick="submitTicket()">Enviar ticket</button>
+    </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+    function togglePanel(header) {
+        header.classList.toggle('open');
+        const body = header.nextElementSibling;
+        body.classList.toggle('open');
+    }
+
+    function copyValue(id, btn) {
+        const el = document.getElementById(id);
+        let text = el.dataset.real || el.textContent;
+        if (el.classList.contains('secret') && !el.classList.contains('revealed')) {
+            showToast('⚠️ Revela el valor primero antes de copiar');
+            return;
+        }
+        navigator.clipboard.writeText(text).then(() => {
+            btn.textContent = '✓';
+            btn.classList.add('copied');
+            setTimeout(() => { btn.textContent = '📋'; btn.classList.remove('copied'); }, 2000);
+        });
+    }
+
+    function revealSecret(id, realValue) {
+        const el = document.getElementById(id);
+        if (el.classList.contains('revealed')) {
+            el.textContent = '••••••••••••••••••••••••••';
+            el.classList.remove('revealed');
+            el.dataset.real = '';
+        } else {
+            el.textContent = realValue;
+            el.dataset.real = realValue;
+            el.classList.add('revealed');
+        }
+    }
+
+    function showModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function openTicketModal() { showModal('ticketModal'); }
+
+    function submitTicket() {
+        closeModal('ticketModal');
+        showToast('✅ Ticket enviado. Te responderemos en menos de 2 horas.');
+    }
+
+    function showToast(msg) {
+        const c = document.getElementById('toastContainer');
+        const t = document.createElement('div');
+        t.className = 'toast';
+        t.textContent = msg;
+        c.appendChild(t);
+        setTimeout(() => t.remove(), 4000);
+    }
+
+    // Close modals on outside click
+    document.querySelectorAll('.modal-overlay').forEach(o => {
+        o.addEventListener('click', e => { if (e.target === o) o.style.display = 'none'; });
+    });
+
+    // Sidebar nav active state
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+</script>
+</body>
+</html>
