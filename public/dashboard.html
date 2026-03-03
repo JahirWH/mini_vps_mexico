@@ -5,6 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard — NexCloud MX</title>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <script>
+
+// (async function authGuard() {
+//   try {
+//     // 1. Verificar sesión
+//     const meRes = await fetch('/auth/me', { credentials: 'same-origin' });
+
+//     if (!meRes.ok) {
+//       // No hay sesión válida → redirigir
+//       window.location.href = '/login.html?reason=unauthorized';
+//       return;
+//     }
+
+//     const { user } = await meRes.json();
+
+//     // 2. Inyectar nombre e iniciales en el sidebar
+//     const nameEl   = document.getElementById('sidebar-user-name');
+//     const avatarEl = document.getElementById('sidebar-user-avatar');
+//     const planEl   = document.getElementById('sidebar-user-plan');
+
+//     if (nameEl)   nameEl.textContent   = user.name;
+//     if (avatarEl) avatarEl.textContent = getInitials(user.name);
+//     if (planEl)   planEl.textContent   = user.role === 'admin' ? 'Admin' : 'Cliente';
+
+//     // 3. Cargar servicios y llenar credenciales en el dashboard
+//     if (document.getElementById('section-overview')) {
+//       await loadServices();
+//     }
+
+//   } catch (err) {
+//     console.error('Auth guard error:', err);
+//     window.location.href = '/login.html?reason=unauthorized';
+//   }
+// })();
+    </script>
     <style>
         :root {
             --bg: #060810;
