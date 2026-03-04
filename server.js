@@ -15,7 +15,11 @@ const app = express();
 const db  = new Database('./nexcloud.db'); // archivo local, sin configurar nada extra
 
 // ─── CONSTANTES ───────────────────────────────
-const JWT_SECRET      = process.env.JWT_SECRET || 'cambia_esto_en_produccion_usa_dotenv';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  console.error('❌ ERROR: JWT_SECRET no está definido en .env');
+  process.exit(1);
+}
 const COOKIE_NAME     = 'nexcloud_token';
 const SALT_ROUNDS     = 10;
 const TOKEN_EXPIRES   = '7d'; // el token dura 7 días
@@ -182,7 +186,17 @@ app.post('/auth/register', async (req, res) => {
 //  POST /auth/login
 //  Body: { email, password }
 // ─────────────────────────────────────────────
-app.post('/auth/login', async (req, res) => {
+
+const rateLimit = require('express-rate-limit');
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 5, // máximo 5 intentos
+  message: 'Demasiados intentos de login, intenta más tarde'
+});
+
+
+app.post('/auth/login',loginLimiter , async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -293,6 +307,13 @@ app.post('/admin/services', requireAdmin, (req, res) => {
   if (!user_id || !type || !credentials) {
     return res.status(400).json({ error: 'Faltan campos requeridos' });
   }
+  if (typeof credentials !== 'object' || !credentials) {
+    return res.status(400).json({ error: 'Credenciales debe ser un objeto' });
+  }
+  const user = db.prepare('SELECT id FROM users WHERE id = ?').get(user_id);
+  if (!user) {
+    return res.status(404).json({ error: 'Usuario no encontrado' });
+  }
 
   const validTypes = ['vps', 'cpanel', 'botia', 'vpn'];
   if (!validTypes.includes(type)) {
@@ -312,6 +333,7 @@ app.post('/admin/services', requireAdmin, (req, res) => {
 
   res.status(201).json({ message: 'Servicio creado', service_id: result.lastInsertRowid });
 });
+
 
 
 // ─────────────────────────────────────────────
