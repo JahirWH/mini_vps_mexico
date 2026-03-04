@@ -2,6 +2,8 @@
 
 Panel de cliente para servicios VPS, Hosting cPanel, Bots IA y VPN.
 
+<div align="center"><img src="demo.webp"></div>
+
 ## 🚀 Características
 
 - Autenticación JWT segura

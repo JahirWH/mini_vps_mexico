@@ -417,9 +417,14 @@
 
         // Validar campos
         let valid = true;
-        if (!email || !email.includes('@')) {
-            markInput('login-email', 'error'); showErr('login-email-err', true); valid = false;
-        }
+        function validateEmail(email) {
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return regex.test(email);
+            }
+
+        function validatePassword(pwd) {
+            return pwd.length >= 8 && /[A-Z]/.test(pwd) && /[0-9]/.test(pwd);
+            }
         if (!password) {
             markInput('login-password', 'error'); showErr('login-pass-err', true); valid = false;
         }
